@@ -1,0 +1,17 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/ExcelProcessor.Abstractions/bin/Debug/net7.0
+/ExcelProcessor.Abstractions/obj
+/ExcelProcessor.Core/bin/Debug/net7.0
+/ExcelProcessor.Core/obj/Debug/net7.0
+/ExcelProcessor.Core/obj
+/ExcelProcessor.Example/bin/Debug/net7.0
+/ExcelProcessor.Example/obj/Debug/net7.0
+/ExcelProcessor.Example/obj
+/Examples/ExcelProcessor.Examples.Reader/bin/Debug/net7.0
+/Examples/ExcelProcessor.Examples.Reader/obj
+/Examples/ExcelProcessor.Examples.Writer/bin/Debug/net7.0
+/Examples/ExcelProcessor.Examples.Writer/obj
