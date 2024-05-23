@@ -29,7 +29,7 @@ Steps:
 
 4. Implement *IExcelSheetBuilder*. Build method usually follows the following steps:
    - Initialize cursor in a cell
-   - Perform operations in the cell: InsertValue, InsertFormula, InsertImage, Merge, SetRowHeight, etc
+   - Perform operations in the cell: InsertValue, InsertFormula, InsertImage, Merge, SetRowHeight, CreateTable, etc
    - User cursor to move to another position: NextColumn or NextRowFromOrigin
    - Continue performing operations in a cell
   
