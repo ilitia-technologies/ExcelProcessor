@@ -15,3 +15,7 @@
 /Examples/ExcelProcessor.Examples.Reader/obj
 /Examples/ExcelProcessor.Examples.Writer/bin/Debug/net7.0
 /Examples/ExcelProcessor.Examples.Writer/obj
+/Examples/ExcelProcessor.Examples.Reader/bin/Release/net7.0
+/Examples/ExcelProcessor.Examples.Writer/bin/Release/net7.0
+/ExcelProcessor.Abstractions/bin/Release/net7.0
+/ExcelProcessor.Core/bin/Release/net7.0
