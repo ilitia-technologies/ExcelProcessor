@@ -15,8 +15,8 @@ namespace ExcelProcessor.Core.Generator.Sheets.Operations
     public class ExcelSheetWriter : ExcelSheetBase, IExcelSheetWriter
     {
         protected readonly IExcelStyles styles;
-        public ExcelSheetWriter(WorksheetPart worksheetPart, IExcelStyles styles = null)
-            : base(worksheetPart)
+        public ExcelSheetWriter(WorkbookPart workbookPart, WorksheetPart worksheetPart, IExcelStyles styles = null)
+            : base(workbookPart, worksheetPart)
         {            
             this.styles = styles;
         }
@@ -56,6 +56,15 @@ namespace ExcelProcessor.Core.Generator.Sheets.Operations
             Cell cell = InsertCellInWorksheet(cursor.CellRef.Column, cursor.CellRef.Row, worksheetPart, CellValues.Number);
             cell.CellValue = new CellValue(value.ToString());
             cell.DataType = new EnumValue<CellValues>(CellValues.Number);
+            ApplyFormat(cell, styleName);
+        }
+
+        public void InsertValue(DateTime value, string styleName = null)
+        {
+            Cell cell = InsertCellInWorksheet(cursor.CellRef.Column, cursor.CellRef.Row, worksheetPart, CellValues.String);
+
+            cell.CellValue = new CellValue(value);
+            cell.DataType = new EnumValue<CellValues>(CellValues.Date);
             ApplyFormat(cell, styleName);
         }
 
@@ -130,6 +139,62 @@ namespace ExcelProcessor.Core.Generator.Sheets.Operations
                 row.InsertBefore(newCell, refCell);
                 return newCell;
             }
+        }
+
+        public void CreateTableWithHeaders(ICellReference from, ICellReference to)
+        {
+            string refRange = $"{from.ToExcelString()}:{to.ToExcelString()}";
+            int tableNumber = worksheetPart.TableDefinitionParts.Count() + 1;
+            Table table = new Table()
+            {
+                Id = (uint)tableNumber,
+                Name = $"Table{tableNumber}",
+                Reference = refRange,
+                AutoFilter = new AutoFilter()
+                {
+                    Reference = refRange,
+                },
+                TotalsRowShown = false,
+                DisplayName = $"Table{tableNumber}"
+            };
+            // Columns
+            uint columnIndex = 1;
+            ICellReference cellIndex = new CellReference(from.Row, from.Column);
+            bool createColumns = true;
+            TableColumns columns = new TableColumns();
+            while (createColumns)
+            {
+                columns.Append(new TableColumn()
+                {
+                    Id = columnIndex,
+                    Name = ReadValueInternal(cellIndex),
+                });
+
+                if (cellIndex.Column == to.Column)
+                    createColumns = false;
+                else
+                {
+                    cellIndex = cellIndex.NextColumn();
+                    columnIndex++;
+                }
+            }
+
+            columns.Count = columnIndex;
+            table.Append(columns);
+
+            TableDefinitionPart tableDefParts = worksheetPart.AddNewPart<TableDefinitionPart>($"rId{tableNumber}");
+            tableDefParts.Table = table;
+
+            TableParts tableParts = (TableParts)worksheetPart.Worksheet.ChildElements.Where(ce => ce is TableParts).FirstOrDefault(); // Add table parts only once
+            if (tableParts is null)
+            {
+                tableParts = new TableParts();
+                worksheetPart.Worksheet.Append(tableParts);
+            }
+            TablePart tablePart = new TablePart() { Id = $"rId{tableNumber}" };
+            tableParts.Append(tablePart);
+
+            tableParts.Count = 1;
         }
 
         #region Insert Image

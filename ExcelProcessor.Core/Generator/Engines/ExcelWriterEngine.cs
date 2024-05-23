@@ -85,7 +85,7 @@ namespace ExcelProcessor.Core.Generator.Engines
             if (worksheetPart == null)
                 return null;
 
-            return new ExcelSheetWriter(worksheetPart, styles);
+            return new ExcelSheetWriter(spreadSheetDocument.WorkbookPart, worksheetPart, styles);
         }
 
         private byte[] GetFileAndClose()

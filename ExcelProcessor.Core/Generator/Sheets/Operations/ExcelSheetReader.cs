@@ -19,7 +19,7 @@ namespace ExcelProcessor.Core.Generator.Sheets.Operations
         public IExcelReaderResult<TEntityReaded> Results { get; private set; }
 
         public ExcelSheetReader(WorkbookPart workbookPart, WorksheetPart worksheetPart, IExcelReaderResult<TEntityReaded> results) 
-            : base(worksheetPart)
+            : base(workbookPart, worksheetPart)
         {
             Results = results;
             this.workbookPart = workbookPart ?? throw new ArgumentNullException(nameof(workbookPart));
@@ -84,47 +84,7 @@ namespace ExcelProcessor.Core.Generator.Sheets.Operations
         {
             string valueAsRepresentableString = value == null ? "Null" : value;
             return string.IsNullOrEmpty(customError) ? $"Value ({valueAsRepresentableString}) is not a boolean (Yes / No)" : customError;
-        }
-
-        private string ReadValueInternal(ICellReference cellRef)
-        {
-            Worksheet worksheet = worksheetPart.Worksheet;
-            SheetData sheetData = worksheet.GetFirstChild<SheetData>();
-            string cellReference = cellRef.ToString();
-
-            // If the worksheet does not contain a row with the specified row index: exception
-            Row row;
-            if (sheetData.Elements<Row>().Any(r => r.RowIndex == cellRef.Row))
-            {
-                row = sheetData.Elements<Row>().First(r => r.RowIndex == cellRef.Row);
-            }
-            else
-                throw new RowNotExistsException(cellRef.Row);
-
-            // If there is not a cell with the specified column name, insert one.  
-            if (row.Elements<Cell>().Any(c => c.CellReference.Value == cellReference))
-            {
-
-                Cell cell = row.Elements<Cell>().First(c => c.CellReference.Value == cellReference);
-                if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-                {
-                    int id;
-                    if (int.TryParse(cell.InnerText, out id))
-                    {
-                        var sharedStringTable = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
-                        if (sharedStringTable != null)
-                        {
-                            return sharedStringTable.SharedStringTable.ElementAt(id).InnerText;
-                        }
-                    }
-                }
-                return cell.CellValue != null ?
-                                cell.CellValue.InnerText :
-                                null;
-            }
-            else
-                return null;
-        }        
+        }               
 
         public IEnumerable<TParallelReaded> ReadInParallel<TParallelReaded>(int startsAtRow, int columnCount, Func<string[], uint, TParallelReaded> processAction)
         {

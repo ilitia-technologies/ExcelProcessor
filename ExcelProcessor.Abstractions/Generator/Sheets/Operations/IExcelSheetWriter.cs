@@ -1,4 +1,6 @@
-﻿namespace ExcelProcessor.Abstractions.Generator.Sheets.Operations
+﻿using ExcelProcessor.Abstractions.Pointers;
+
+namespace ExcelProcessor.Abstractions.Generator.Sheets.Operations
 {
     public interface IExcelSheetWriter : IExcelSheet
     {
@@ -22,6 +24,20 @@
         /// <param name="value">Value to insert</param>
         /// <param name="styleName">Style name. Optional</param>
         void InsertValue(int value, string styleName = null);
+
+        /// <summary>
+        /// Insert a datetime value at cursor position
+        /// </summary>
+        /// <param name="value">Value to insert</param>
+        /// <param name="styleName">Style name. Optional</param>
+        void InsertValue(DateTime value, string styleName = null);
+
+        /// <summary>
+        /// Create a table with headers in first row
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        void CreateTableWithHeaders(ICellReference from, ICellReference to);
 
         /// <summary>
         /// Insert a formula at cursor position
